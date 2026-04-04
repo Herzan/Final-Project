@@ -1,0 +1,323 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FitTrack API",
+    "version": "1.0.0",
+    "description": "Fitness tracking API for workouts, meals, and goals"
+  },
+  "servers": [
+        {
+      "url": "https://cse-341-project2-ea66.onrender.com",
+      "description": "Production (Render)"
+    },
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "List of users"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/workouts": {
+      "get": {
+        "summary": "Get all workouts",
+        "description": "Retrieve a list of all workouts in the system",
+        "responses": {
+          "200": {
+            "description": "List of workouts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Workout"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new workout",
+        "description": "Add a new workout (usually linked to a userId)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Workout"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workout created successfully"
+          },
+          "400": {
+            "description": "Validation error or bad request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/workouts/{workoutId}": {
+      "get": {
+        "summary": "Get a single workout by ID",
+        "description": "Retrieve one workout using its MongoDB ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workoutId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The workout ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout found"
+          },
+          "404": {
+            "description": "Workout not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a workout",
+        "description": "Update an existing workout by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workoutId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Workout"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workout updated successfully"
+          },
+          "404": {
+            "description": "Workout not found"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a workout",
+        "description": "Remove a workout by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workoutId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout deleted successfully"
+          },
+          "404": {
+            "description": "Workout not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/workouts/user/{userId}": {
+      "get": {
+        "summary": "Get all workouts for a specific user",
+        "description": "Retrieve workouts filtered by userId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user's workouts"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/workouts/date/{date}": {
+      "get": {
+        "summary": "Get workouts by date",
+        "description": "Retrieve workouts for a specific date (format YYYY-MM-DD)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "date",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of workouts on that date"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "strongpassword123"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "Workout": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "60f7b5c9e4b0a1234567890a"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-04-03"
+          },
+          "type": {
+            "type": "string",
+            "example": "Strength"
+          },
+          "duration": {
+            "type": "integer",
+            "example": 45
+          },
+          "caloriesBurned": {
+            "type": "integer",
+            "example": 350
+          },
+          "notes": {
+            "type": "string",
+            "example": "Great chest and back session"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["userId", "date", "type", "duration"]
+      }
+    }
+  }
+}
