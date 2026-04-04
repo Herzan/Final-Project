@@ -3,46 +3,65 @@
   "info": {
     "title": "FitTrack API",
     "version": "1.0.0",
-    "description": "Fitness tracking API for workouts, meals, and goals"
+    "description": "Fitness tracking API for managing users, workouts, meals, and goals"
   },
   "servers": [
-        {
+    {
       "url": "https://final-project-27de.onrender.com",
       "description": "Production (Render)"
     },
     {
-      "url": "http://localhost:5000"
+      "url": "http://localhost:5000",
+      "description": "Local development"
     }
   ],
   "paths": {
     "/api/users": {
       "get": {
         "summary": "Get all users",
+        "description": "Retrieve a list of all registered users (passwords are hidden)",
         "responses": {
           "200": {
-            "description": "List of users"
-          }
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
         }
       },
       "post": {
-        "summary": "Create a new user",
+        "summary": "Create a new user (Register)",
+        "description": "Register a new user. Password will be automatically hashed.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
+              "schema": { "$ref": "#/components/schemas/UserInput" },
+              "example": {
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "password": "StrongPass123!"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User created successfully"
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
           },
-          "400": {
-            "description": "Validation error"
-          }
+          "400": { "description": "Validation error (missing fields or invalid email)" },
+          "500": { "description": "Server error" }
         }
       }
     },
@@ -54,25 +73,29 @@
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "string" },
+            "description": "MongoDB ObjectId of the user"
           }
         ],
         "responses": {
           "200": {
-            "description": "User found"
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
           },
-          "404": {
-            "description": "User not found"
-          }
+          "404": { "description": "User not found" },
+          "500": { "description": "Server error" }
         }
       }
     },
+
     "/api/workouts": {
       "get": {
         "summary": "Get all workouts",
-        "description": "Retrieve a list of all workouts in the system",
+        "description": "Retrieve a list of all workouts in the system (populated with user info)",
         "responses": {
           "200": {
             "description": "List of workouts",
@@ -80,44 +103,48 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Workout"
-                  }
+                  "items": { "$ref": "#/components/schemas/Workout" }
                 }
               }
             }
           },
-          "500": {
-            "description": "Server error"
-          }
+          "500": { "description": "Server error" }
         }
       },
       "post": {
         "summary": "Create a new workout",
-        "description": "Add a new workout (usually linked to a userId)",
+        "description": "Add a new workout linked to a userId",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Workout"
+              "schema": { "$ref": "#/components/schemas/WorkoutInput" },
+              "example": {
+                "userId": "60f7b5c9e4b0a1234567890a",
+                "date": "2026-04-03",
+                "type": "Strength",
+                "duration": 60,
+                "caloriesBurned": 450,
+                "notes": "Focused on bench press and deadlifts. Felt strong today!"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Workout created successfully"
+            "description": "Workout created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Workout" }
+              }
+            }
           },
-          "400": {
-            "description": "Validation error or bad request"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "400": { "description": "Validation error or bad request" },
+          "500": { "description": "Server error" }
         }
       }
     },
+
     "/api/workouts/{workoutId}": {
       "get": {
         "summary": "Get a single workout by ID",
@@ -127,22 +154,21 @@
             "in": "path",
             "name": "workoutId",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The workout ID"
+            "schema": { "type": "string" },
+            "description": "The workout MongoDB ObjectId"
           }
         ],
         "responses": {
           "200": {
-            "description": "Workout found"
+            "description": "Workout found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Workout" }
+              }
+            }
           },
-          "404": {
-            "description": "Workout not found"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "404": { "description": "Workout not found" },
+          "500": { "description": "Server error" }
         }
       },
       "put": {
@@ -153,34 +179,29 @@
             "in": "path",
             "name": "workoutId",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "string" }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Workout"
-              }
+              "schema": { "$ref": "#/components/schemas/WorkoutInput" }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Workout updated successfully"
+            "description": "Workout updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Workout" }
+              }
+            }
           },
-          "404": {
-            "description": "Workout not found"
-          },
-          "400": {
-            "description": "Validation error"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "400": { "description": "Validation error" },
+          "404": { "description": "Workout not found" },
+          "500": { "description": "Server error" }
         }
       },
       "delete": {
@@ -191,52 +212,50 @@
             "in": "path",
             "name": "workoutId",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Workout deleted successfully"
-          },
-          "404": {
-            "description": "Workout not found"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "200": { "description": "Workout deleted successfully" },
+          "404": { "description": "Workout not found" },
+          "500": { "description": "Server error" }
         }
       }
     },
+
     "/api/workouts/user/{userId}": {
       "get": {
         "summary": "Get all workouts for a specific user",
-        "description": "Retrieve workouts filtered by userId",
+        "description": "Retrieve all workouts filtered by userId",
         "parameters": [
           {
             "in": "path",
             "name": "userId",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of user's workouts"
+            "description": "List of user's workouts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Workout" }
+                }
+              }
+            }
           },
-          "500": {
-            "description": "Server error"
-          }
+          "500": { "description": "Server error" }
         }
       }
     },
+
     "/api/workouts/date/{date}": {
       "get": {
         "summary": "Get workouts by date",
-        "description": "Retrieve workouts for a specific date (format YYYY-MM-DD)",
+        "description": "Retrieve workouts for a specific date (format: YYYY-MM-DD)",
         "parameters": [
           {
             "in": "path",
@@ -245,78 +264,73 @@
             "schema": {
               "type": "string",
               "format": "date"
-            }
+            },
+            "example": "2026-04-03"
           }
         ],
         "responses": {
           "200": {
-            "description": "List of workouts on that date"
+            "description": "List of workouts on that date",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Workout" }
+                }
+              }
+            }
           },
-          "500": {
-            "description": "Server error"
-          }
+          "500": { "description": "Server error" }
         }
       }
     }
   },
+
   "components": {
     "schemas": {
+      "UserInput": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
+          "password": { "type": "string", "example": "StrongPass123!", "minLength": 8 }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "John Doe"
-          },
-          "email": {
-            "type": "string",
-            "example": "john@example.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "strongpassword123"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": ["name", "email", "password"]
+          "_id": { "type": "string" },
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "john.doe@example.com" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "WorkoutInput": {
+        "type": "object",
+        "required": ["userId", "date", "type", "duration"],
+        "properties": {
+          "userId": { "type": "string", "example": "60f7b5c9e4b0a1234567890a" },
+          "date": { "type": "string", "format": "date", "example": "2026-04-03" },
+          "type": { "type": "string", "example": "Strength" },
+          "duration": { "type": "integer", "minimum": 1, "example": 60 },
+          "caloriesBurned": { "type": "integer", "minimum": 0, "example": 450 },
+          "notes": { "type": "string", "example": "Focused on bench press and deadlifts. Felt strong today!" }
+        }
       },
       "Workout": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string",
-            "example": "60f7b5c9e4b0a1234567890a"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "example": "2026-04-03"
-          },
-          "type": {
-            "type": "string",
-            "example": "Strength"
-          },
-          "duration": {
-            "type": "integer",
-            "example": 45
-          },
-          "caloriesBurned": {
-            "type": "integer",
-            "example": 350
-          },
-          "notes": {
-            "type": "string",
-            "example": "Great chest and back session"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": ["userId", "date", "type", "duration"]
+          "_id": { "type": "string" },
+          "userId": { "type": "string", "example": "60f7b5c9e4b0a1234567890a" },
+          "date": { "type": "string", "format": "date", "example": "2026-04-03" },
+          "type": { "type": "string", "example": "Strength" },
+          "duration": { "type": "integer", "example": 60 },
+          "caloriesBurned": { "type": "integer", "example": 450 },
+          "notes": { "type": "string", "example": "Focused on bench press and deadlifts. Felt strong today!" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
       }
     }
   }
