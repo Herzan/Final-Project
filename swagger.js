@@ -10,10 +10,58 @@ const options = {
       description: 'Fitness tracking API for workouts, meals, and goals',
     },
     servers: [
-      { url: 'http://localhost:5000' }, // Update for production
+      { url: 'http://localhost:5000', description: 'Local development' },
+      { url: 'https://final-project-27de.onrender.com', description: 'Production (Render)' },
     ],
+    components: {
+      schemas: {
+        UserInput: {
+          type: 'object',
+          required: ['name', 'email', 'password'],
+          properties: {
+            name: { type: 'string', example: 'John Doe' },
+            email: { type: 'string', format: 'email', example: 'john.doe@example.com' },
+            password: { type: 'string', example: 'StrongPass123!', minLength: 8 }
+          }
+        },
+        User: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string' },
+            name: { type: 'string', example: 'John Doe' },
+            email: { type: 'string', example: 'john.doe@example.com' },
+            createdAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        WorkoutInput: {
+          type: 'object',
+          required: ['userId', 'date', 'type', 'duration'],
+          properties: {
+            userId: { type: 'string', example: '60f7b5c9e4b0a1234567890a' },
+            date: { type: 'string', format: 'date', example: '2026-04-03' },
+            type: { type: 'string', example: 'Strength' },
+            duration: { type: 'integer', minimum: 1, example: 60 },
+            caloriesBurned: { type: 'integer', minimum: 0, example: 450 },
+            notes: { type: 'string', example: 'Focused on bench press and deadlifts. Felt strong today!' }
+          }
+        },
+        Workout: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string' },
+            userId: { type: 'string', example: '60f7b5c9e4b0a1234567890a' },
+            date: { type: 'string', format: 'date', example: '2026-04-03' },
+            type: { type: 'string', example: 'Strength' },
+            duration: { type: 'integer', example: 60 },
+            caloriesBurned: { type: 'integer', example: 450 },
+            notes: { type: 'string', example: 'Focused on bench press and deadlifts. Felt strong today!' },
+            createdAt: { type: 'string', format: 'date-time' }
+          }
+        }
+      }
+    }
   },
-  apis: ['./routes/*.js'], // Path to files with Swagger comments
+  apis: ['./routes/*.js'], // This will still include your JSDoc comments
 };
 
 const specs = swaggerJsdoc(options);
