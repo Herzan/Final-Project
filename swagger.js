@@ -7,11 +7,17 @@ const options = {
     info: {
       title: 'FitTrack API',
       version: '1.0.0',
-      description: 'Fitness tracking API for workouts, meals, and goals',
+      description: 'Fitness tracking API for managing users, workouts, meals, and goals',
     },
     servers: [
-      { url: 'http://localhost:5000', description: 'Local development' },
-      { url: 'https://final-project-27de.onrender.com', description: 'Production (Render)' },
+      { 
+        url: 'https://final-project-27de.onrender.com', 
+        description: 'Production (Render)' 
+      },
+      { 
+        url: 'http://localhost:5000', 
+        description: 'Local development' 
+      },
     ],
     components: {
       schemas: {
@@ -49,23 +55,23 @@ const options = {
           type: 'object',
           properties: {
             _id: { type: 'string' },
-            userId: { type: 'string', example: '60f7b5c9e4b0a1234567890a' },
-            date: { type: 'string', format: 'date', example: '2026-04-03' },
-            type: { type: 'string', example: 'Strength' },
-            duration: { type: 'integer', example: 60 },
-            caloriesBurned: { type: 'integer', example: 450 },
-            notes: { type: 'string', example: 'Focused on bench press and deadlifts. Felt strong today!' },
+            userId: { type: 'string' },
+            date: { type: 'string', format: 'date' },
+            type: { type: 'string' },
+            duration: { type: 'integer' },
+            caloriesBurned: { type: 'integer' },
+            notes: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' }
           }
         }
       }
     }
   },
-  apis: ['./routes/*.js'], // This will still include your JSDoc comments
+  apis: ['./routes/*.js'],   // This reads JSDoc from your route files
 };
 
 const specs = swaggerJsdoc(options);
 
 module.exports = (app) => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 };
