@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const auth = require('../middleware/auth');   // ← Must be imported
 
 /**
  * @swagger
@@ -80,9 +81,40 @@ router.post('/', userController.createUser);
 
 /**
  * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: Login user
+ *     description: Authenticate user and return JWT token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginInput'
+ *           example:
+ *             email: "john.doe@example.com"
+ *             password: "StrongPass123!"
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/login', userController.loginUser);
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   put:
  *     summary: Update user by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -98,6 +130,8 @@ router.post('/', userController.createUser);
  *     responses:
  *       200:
  *         description: User updated successfully
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: User not found
  *       400:
@@ -105,13 +139,15 @@ router.post('/', userController.createUser);
  *       500:
  *         description: Server error
  */
-router.put('/:id', userController.updateUser);
+router.put('/:id', auth, userController.updateUser);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   delete:
  *     summary: Delete user by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -121,11 +157,13 @@ router.put('/:id', userController.updateUser);
  *     responses:
  *       200:
  *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: User not found
  *       500:
  *         description: Server error
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', auth, userController.deleteUser);
 
 module.exports = router;
