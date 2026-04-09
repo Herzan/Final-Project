@@ -6,14 +6,8 @@
     "description": "Fitness tracking API for managing users, workouts, meals, and goals with JWT authentication"
   },
   "servers": [
-    {
-      "url": "https://final-project-27de.onrender.com",
-      "description": "Production (Render)"
-    },
-    {
-      "url": "http://localhost:5000",
-      "description": "Local development"
-    }
+    { "url": "https://final-project-27de.onrender.com", "description": "Production (Render)" },
+    { "url": "http://localhost:5000", "description": "Local development" }
   ],
   "components": {
     "securitySchemes": {
@@ -21,7 +15,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Enter your JWT token (obtained from /api/users/login)"
+        "description": "Enter JWT token from /api/users/login (without 'Bearer ' prefix)"
       }
     },
     "schemas": {
@@ -29,26 +23,27 @@
         "type": "object",
         "required": ["name", "email", "password"],
         "properties": {
-          "name": { "type": "string", "example": "John Doe" },
-          "email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
-          "password": { "type": "string", "minLength": 8, "example": "StrongPass123!" }
+          "name": { "type": "string", "example": "Maria Gonzalez" },
+          "email": { "type": "string", "format": "email", "example": "maria.gonzalez@email.com" },
+          "password": { "type": "string", "minLength": 8, "example": "FitTrack2026!" }
         }
       },
       "User": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string" },
-          "name": { "type": "string", "example": "John Doe" },
-          "email": { "type": "string", "example": "john.doe@example.com" },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "_id": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d0" },
+          "name": { "type": "string", "example": "Maria Gonzalez" },
+          "email": { "type": "string", "example": "maria.gonzalez@email.com" },
+          "createdAt": { "type": "string", "format": "date-time", "example": "2026-04-05T14:30:00.000Z" }
         }
       },
+
       "LoginInput": {
         "type": "object",
         "required": ["email", "password"],
         "properties": {
-          "email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
-          "password": { "type": "string", "example": "StrongPass123!" }
+          "email": { "type": "string", "format": "email", "example": "maria.gonzalez@email.com" },
+          "password": { "type": "string", "example": "FitTrack2026!" }
         }
       },
       "AuthResponse": {
@@ -61,27 +56,27 @@
 
       "WorkoutInput": {
         "type": "object",
-        "required": ["userId", "date", "type", "duration"],
+        "required": ["date", "type", "duration"],
         "properties": {
-          "userId": { "type": "string", "example": "60f7b5c9e4b0a1234567890a" },
-          "date": { "type": "string", "format": "date", "example": "2026-04-03" },
-          "type": { "type": "string", "example": "Strength" },
-          "duration": { "type": "integer", "minimum": 1, "example": 60 },
-          "caloriesBurned": { "type": "integer", "minimum": 0, "example": 450 },
-          "notes": { "type": "string", "example": "Focused on bench press and deadlifts." }
+          "date": { "type": "string", "format": "date", "example": "2026-04-08" },
+          "type": { "type": "string", "enum": ["Cardio", "Strength", "HIIT", "Yoga", "Mobility", "Sports", "Other"], "example": "Strength" },
+          "duration": { "type": "integer", "example": 65 },
+          "caloriesBurned": { "type": "integer", "example": 480 },
+          "notes": { "type": "string", "example": "Focused on squats, bench press and deadlifts. Felt very strong today." }
         }
       },
       "Workout": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string" },
-          "userId": { "type": "string" },
-          "date": { "type": "string", "format": "date" },
-          "type": { "type": "string" },
-          "duration": { "type": "integer" },
-          "caloriesBurned": { "type": "integer" },
-          "notes": { "type": "string" },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "_id": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d1" },
+          "userId": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d0" },
+          "date": { "type": "string", "format": "date", "example": "2026-04-08" },
+          "type": { "type": "string", "example": "Strength" },
+          "duration": { "type": "integer", "example": 65 },
+          "caloriesBurned": { "type": "integer", "example": 480 },
+          "notes": { "type": "string", "example": "Focused on squats, bench press and deadlifts. Felt very strong today." },
+          "createdAt": { "type": "string", "format": "date-time", "example": "2026-04-08T09:15:00.000Z" },
+          "updatedAt": { "type": "string", "format": "date-time", "example": "2026-04-08T09:15:00.000Z" }
         }
       },
 
@@ -89,30 +84,30 @@
         "type": "object",
         "required": ["date", "mealType", "foodItems", "calories"],
         "properties": {
-          "date": { "type": "string", "format": "date", "example": "2026-04-03" },
-          "mealType": { "type": "string", "enum": ["Breakfast", "Lunch", "Dinner", "Snack"], "example": "Lunch" },
-          "foodItems": { "type": "string", "example": "Grilled chicken, rice, broccoli" },
-          "calories": { "type": "integer", "minimum": 0, "example": 650 },
-          "protein": { "type": "number", "minimum": 0, "example": 45 },
-          "carbs": { "type": "number", "minimum": 0, "example": 60 },
-          "fats": { "type": "number", "minimum": 0, "example": 20 },
-          "notes": { "type": "string", "example": "High protein meal" }
+          "date": { "type": "string", "format": "date", "example": "2026-04-08" },
+          "mealType": { "type": "string", "enum": ["Breakfast", "Lunch", "Dinner", "Snack"], "example": "Breakfast" },
+          "foodItems": { "type": "string", "example": "Oatmeal with banana, peanut butter, and whey protein" },
+          "calories": { "type": "integer", "example": 520 },
+          "protein": { "type": "number", "example": 35 },
+          "carbs": { "type": "number", "example": 68 },
+          "fats": { "type": "number", "example": 14 },
+          "notes": { "type": "string", "example": "Pre-workout breakfast - high energy" }
         }
       },
       "Meal": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string" },
-          "userId": { "type": "string" },
-          "date": { "type": "string", "format": "date" },
-          "mealType": { "type": "string" },
-          "foodItems": { "type": "string" },
-          "calories": { "type": "integer" },
-          "protein": { "type": "number" },
-          "carbs": { "type": "number" },
-          "fats": { "type": "number" },
-          "notes": { "type": "string" },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "_id": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d2" },
+          "userId": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d0" },
+          "date": { "type": "string", "format": "date", "example": "2026-04-08" },
+          "mealType": { "type": "string", "example": "Breakfast" },
+          "foodItems": { "type": "string", "example": "Oatmeal with banana, peanut butter, and whey protein" },
+          "calories": { "type": "integer", "example": 520 },
+          "protein": { "type": "number", "example": 35 },
+          "carbs": { "type": "number", "example": 68 },
+          "fats": { "type": "number", "example": 14 },
+          "notes": { "type": "string", "example": "Pre-workout breakfast - high energy" },
+          "createdAt": { "type": "string", "format": "date-time", "example": "2026-04-08T07:45:00.000Z" }
         }
       },
 
@@ -120,41 +115,42 @@
         "type": "object",
         "required": ["title", "targetValue", "unit"],
         "properties": {
-          "title": { "type": "string", "example": "Lose 10kg" },
-          "description": { "type": "string", "example": "Reach target weight by summer" },
-          "targetValue": { "type": "number", "example": 10 },
-          "currentValue": { "type": "number", "default": 0, "example": 3 },
+          "title": { "type": "string", "example": "Lose 8kg" },
+          "description": { "type": "string", "example": "Get in shape for summer vacation" },
+          "targetValue": { "type": "number", "example": 8 },
+          "currentValue": { "type": "number", "default": 0, "example": 2.5 },
           "unit": { "type": "string", "example": "kg" },
-          "deadline": { "type": "string", "format": "date", "example": "2026-06-30" }
+          "deadline": { "type": "string", "format": "date", "example": "2026-07-20" }
         }
       },
       "Goal": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string" },
-          "userId": { "type": "string" },
-          "title": { "type": "string" },
-          "description": { "type": "string" },
-          "targetValue": { "type": "number" },
-          "currentValue": { "type": "number" },
-          "unit": { "type": "string" },
-          "deadline": { "type": "string", "format": "date" },
-          "status": { "type": "string", "enum": ["active", "completed", "failed"] },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "_id": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d3" },
+          "userId": { "type": "string", "example": "67f8a1b2c3d4e5f6a7b8c9d0" },
+          "title": { "type": "string", "example": "Lose 8kg" },
+          "description": { "type": "string", "example": "Get in shape for summer vacation" },
+          "targetValue": { "type": "number", "example": 8 },
+          "currentValue": { "type": "number", "example": 2.5 },
+          "unit": { "type": "string", "example": "kg" },
+          "deadline": { "type": "string", "format": "date", "example": "2026-07-20" },
+          "status": { "type": "string", "enum": ["active", "completed", "failed"], "example": "active" },
+          "createdAt": { "type": "string", "format": "date-time", "example": "2026-04-05T10:20:00.000Z" }
         }
       }
     }
   },
-  "security": [
-    { "bearerAuth": [] }
-  ],
+  "security": [{ "bearerAuth": [] }],
   "paths": {
     "/api/users": {
       "get": {
         "summary": "Get all users",
         "description": "Retrieve a list of all registered users (passwords hidden)",
         "responses": {
-          "200": { "description": "List of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } } },
+          "200": {
+            "description": "List of users",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } }
+          },
           "500": { "description": "Server error" }
         }
       },
@@ -165,7 +161,12 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/UserInput" }
+              "schema": { "$ref": "#/components/schemas/UserInput" },
+              "example": {
+                "name": "Maria Gonzalez",
+                "email": "maria.gonzalez@email.com",
+                "password": "FitTrack2026!"
+              }
             }
           }
         },
@@ -184,12 +185,19 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/LoginInput" }
+              "schema": { "$ref": "#/components/schemas/LoginInput" },
+              "example": {
+                "email": "maria.gonzalez@email.com",
+                "password": "FitTrack2026!"
+              }
             }
           }
         },
         "responses": {
-          "200": { "description": "Login successful", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } } },
+          "200": {
+            "description": "Login successful",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } }
+          },
           "400": { "description": "Invalid credentials" },
           "500": { "description": "Server error" }
         }
@@ -209,7 +217,10 @@
         "summary": "Update user by ID",
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserInput" } } } },
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserInput" } } }
+        },
         "responses": {
           "200": { "description": "User updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
           "400": { "description": "Validation error" },
@@ -243,10 +254,21 @@
       "post": {
         "summary": "Create a new workout",
         "security": [{ "bearerAuth": [] }],
-        "description": "Add a new workout (userId from token recommended)",
+        "description": "Add a new workout linked to the authenticated user",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutInput" } } }
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WorkoutInput" },
+              "example": {
+                "date": "2026-04-08",
+                "type": "Strength",
+                "duration": 65,
+                "caloriesBurned": 480,
+                "notes": "Focused on squats, bench press and deadlifts. Felt very strong today."
+              }
+            }
+          }
         },
         "responses": {
           "201": { "description": "Workout created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } } },
@@ -270,7 +292,10 @@
         "summary": "Update workout",
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "in": "path", "name": "workoutId", "required": true, "schema": { "type": "string" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutInput" } } } },
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutInput" } } }
+        },
         "responses": {
           "200": { "description": "Workout updated" },
           "400": { "description": "Validation error" },
@@ -301,7 +326,7 @@
     "/api/workouts/date/{date}": {
       "get": {
         "summary": "Get workouts by date",
-        "parameters": [{ "in": "path", "name": "date", "required": true, "schema": { "type": "string", "format": "date" }, "example": "2026-04-03" }],
+        "parameters": [{ "in": "path", "name": "date", "required": true, "schema": { "type": "string", "format": "date" }, "example": "2026-04-08" }],
         "responses": { "200": { "description": "Workouts on that date" }, "500": { "description": "Server error" } }
       }
     },
@@ -314,7 +339,24 @@
       "post": {
         "summary": "Create a new meal",
         "security": [{ "bearerAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MealInput" } } } },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MealInput" },
+              "example": {
+                "date": "2026-04-08",
+                "mealType": "Breakfast",
+                "foodItems": "Oatmeal with banana, peanut butter, and whey protein",
+                "calories": 520,
+                "protein": 35,
+                "carbs": 68,
+                "fats": 14,
+                "notes": "Pre-workout breakfast - high energy"
+              }
+            }
+          }
+        },
         "responses": {
           "201": { "description": "Meal created" },
           "400": { "description": "Validation error" },
@@ -351,7 +393,22 @@
       "post": {
         "summary": "Create a new goal",
         "security": [{ "bearerAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GoalInput" } } } },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GoalInput" },
+              "example": {
+                "title": "Lose 8kg",
+                "description": "Get in shape for summer vacation",
+                "targetValue": 8,
+                "currentValue": 2.5,
+                "unit": "kg",
+                "deadline": "2026-07-20"
+              }
+            }
+          }
+        },
         "responses": { "201": { "description": "Goal created" }, "401": { "description": "Unauthorized" } }
       }
     },
