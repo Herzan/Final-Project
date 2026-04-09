@@ -1,9 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db');        // ← fixed if db.js is in root
+const connectDB = require('./config/db');
+
 const userRoutes = require('./routes/userRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
+const mealRoutes = require('./routes/mealRoutes');
+const goalRoutes = require('./routes/goalRoutes');
 const swaggerSetup = require('./swagger');
 
 const app = express();
@@ -15,6 +18,8 @@ connectDB();
 
 app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/meals', mealRoutes);
+app.use('/api/goals', goalRoutes);
 
 swaggerSetup(app);
 

@@ -3,7 +3,7 @@
   "info": {
     "title": "FitTrack API",
     "version": "1.0.0",
-    "description": "Fitness tracking API for managing users, workouts, meals, and goals"
+    "description": "Fitness tracking API for managing users, workouts, meals, and goals with JWT authentication"
   },
   "servers": [
     {
@@ -15,326 +15,15 @@
       "description": "Local development"
     }
   ],
-  "paths": {
-    "/api/users": {
-      "get": {
-        "summary": "Get all users",
-        "description": "Retrieve a list of all registered users (passwords are hidden)",
-        "responses": {
-          "200": {
-            "description": "List of users",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/User" }
-                }
-              }
-            }
-          },
-          "500": { "description": "Server error" }
-        }
-      },
-      "post": {
-        "summary": "Create a new user (Register)",
-        "description": "Register a new user. Password will be automatically hashed.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/UserInput" },
-              "example": {
-                "name": "John Doe",
-                "email": "john.doe@example.com",
-                "password": "StrongPass123!"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/User" }
-              }
-            }
-          },
-          "400": { "description": "Validation error (missing fields or invalid email)" },
-          "500": { "description": "Server error" }
-        }
-      }
-    },
-    "/api/users/{id}": {
-      "get": {
-        "summary": "Get user by ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB ObjectId of the user"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/User" }
-              }
-            }
-          },
-          "404": { "description": "User not found" },
-          "500": { "description": "Server error" }
-        }
-      },
-      "put": {
-        "summary": "Update user by ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/UserInput" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User updated successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/User" }
-              }
-            }
-          },
-          "404": { "description": "User not found" },
-          "400": { "description": "Validation error" },
-          "500": { "description": "Server error" }
-        }
-      },
-      "delete": {
-        "summary": "Delete user by ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": { "description": "User deleted successfully" },
-          "404": { "description": "User not found" },
-          "500": { "description": "Server error" }
-        }
-      }
-    },
-
-    "/api/workouts": {
-      "get": {
-        "summary": "Get all workouts",
-        "description": "Retrieve a list of all workouts in the system (populated with user info)",
-        "responses": {
-          "200": {
-            "description": "List of workouts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/Workout" }
-                }
-              }
-            }
-          },
-          "500": { "description": "Server error" }
-        }
-      },
-      "post": {
-        "summary": "Create a new workout",
-        "description": "Add a new workout linked to a userId",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/WorkoutInput" },
-              "example": {
-                "userId": "60f7b5c9e4b0a1234567890a",
-                "date": "2026-04-03",
-                "type": "Strength",
-                "duration": 60,
-                "caloriesBurned": 450,
-                "notes": "Focused on bench press and deadlifts. Felt strong today!"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Workout created successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Workout" }
-              }
-            }
-          },
-          "400": { "description": "Validation error or bad request" },
-          "500": { "description": "Server error" }
-        }
-      }
-    },
-
-    "/api/workouts/{workoutId}": {
-      "get": {
-        "summary": "Get a single workout by ID",
-        "description": "Retrieve one workout using its MongoDB ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "workoutId",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "The workout MongoDB ObjectId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Workout found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Workout" }
-              }
-            }
-          },
-          "404": { "description": "Workout not found" },
-          "500": { "description": "Server error" }
-        }
-      },
-      "put": {
-        "summary": "Update a workout",
-        "description": "Update an existing workout by ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "workoutId",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/WorkoutInput" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Workout updated successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Workout" }
-              }
-            }
-          },
-          "400": { "description": "Validation error" },
-          "404": { "description": "Workout not found" },
-          "500": { "description": "Server error" }
-        }
-      },
-      "delete": {
-        "summary": "Delete a workout",
-        "description": "Remove a workout by ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "workoutId",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": { "description": "Workout deleted successfully" },
-          "404": { "description": "Workout not found" },
-          "500": { "description": "Server error" }
-        }
-      }
-    },
-
-    "/api/workouts/user/{userId}": {
-      "get": {
-        "summary": "Get all workouts for a specific user",
-        "description": "Retrieve all workouts filtered by userId",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of user's workouts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/Workout" }
-                }
-              }
-            }
-          },
-          "500": { "description": "Server error" }
-        }
-      }
-    },
-
-    "/api/workouts/date/{date}": {
-      "get": {
-        "summary": "Get workouts by date",
-        "description": "Retrieve workouts for a specific date (format: YYYY-MM-DD)",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "date",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            },
-            "example": "2026-04-03"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of workouts on that date",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/Workout" }
-                }
-              }
-            }
-          },
-          "500": { "description": "Server error" }
-        }
-      }
-    }
-  },
-
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your JWT token (obtained from /api/users/login)"
+      }
+    },
     "schemas": {
       "UserInput": {
         "type": "object",
@@ -342,7 +31,7 @@
         "properties": {
           "name": { "type": "string", "example": "John Doe" },
           "email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
-          "password": { "type": "string", "example": "StrongPass123!", "minLength": 8 }
+          "password": { "type": "string", "minLength": 8, "example": "StrongPass123!" }
         }
       },
       "User": {
@@ -352,6 +41,21 @@
           "name": { "type": "string", "example": "John Doe" },
           "email": { "type": "string", "example": "john.doe@example.com" },
           "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "LoginInput": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
+          "password": { "type": "string", "example": "StrongPass123!" }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+          "user": { "$ref": "#/components/schemas/User" }
         }
       },
 
@@ -364,22 +68,311 @@
           "type": { "type": "string", "example": "Strength" },
           "duration": { "type": "integer", "minimum": 1, "example": 60 },
           "caloriesBurned": { "type": "integer", "minimum": 0, "example": 450 },
-          "notes": { "type": "string", "example": "Focused on bench press and deadlifts. Felt strong today!" }
+          "notes": { "type": "string", "example": "Focused on bench press and deadlifts." }
         }
       },
       "Workout": {
         "type": "object",
         "properties": {
           "_id": { "type": "string" },
-          "userId": { "type": "string", "example": "60f7b5c9e4b0a1234567890a" },
+          "userId": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "type": { "type": "string" },
+          "duration": { "type": "integer" },
+          "caloriesBurned": { "type": "integer" },
+          "notes": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "MealInput": {
+        "type": "object",
+        "required": ["date", "mealType", "foodItems", "calories"],
+        "properties": {
           "date": { "type": "string", "format": "date", "example": "2026-04-03" },
-          "type": { "type": "string", "example": "Strength" },
-          "duration": { "type": "integer", "example": 60 },
-          "caloriesBurned": { "type": "integer", "example": 450 },
-          "notes": { "type": "string", "example": "Focused on bench press and deadlifts. Felt strong today!" },
+          "mealType": { "type": "string", "enum": ["Breakfast", "Lunch", "Dinner", "Snack"], "example": "Lunch" },
+          "foodItems": { "type": "string", "example": "Grilled chicken, rice, broccoli" },
+          "calories": { "type": "integer", "minimum": 0, "example": 650 },
+          "protein": { "type": "number", "minimum": 0, "example": 45 },
+          "carbs": { "type": "number", "minimum": 0, "example": 60 },
+          "fats": { "type": "number", "minimum": 0, "example": 20 },
+          "notes": { "type": "string", "example": "High protein meal" }
+        }
+      },
+      "Meal": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "userId": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "mealType": { "type": "string" },
+          "foodItems": { "type": "string" },
+          "calories": { "type": "integer" },
+          "protein": { "type": "number" },
+          "carbs": { "type": "number" },
+          "fats": { "type": "number" },
+          "notes": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "GoalInput": {
+        "type": "object",
+        "required": ["title", "targetValue", "unit"],
+        "properties": {
+          "title": { "type": "string", "example": "Lose 10kg" },
+          "description": { "type": "string", "example": "Reach target weight by summer" },
+          "targetValue": { "type": "number", "example": 10 },
+          "currentValue": { "type": "number", "default": 0, "example": 3 },
+          "unit": { "type": "string", "example": "kg" },
+          "deadline": { "type": "string", "format": "date", "example": "2026-06-30" }
+        }
+      },
+      "Goal": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "userId": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "targetValue": { "type": "number" },
+          "currentValue": { "type": "number" },
+          "unit": { "type": "string" },
+          "deadline": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["active", "completed", "failed"] },
           "createdAt": { "type": "string", "format": "date-time" }
         }
       }
+    }
+  },
+  "security": [
+    { "bearerAuth": [] }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "summary": "Get all users",
+        "description": "Retrieve a list of all registered users (passwords hidden)",
+        "responses": {
+          "200": { "description": "List of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } } },
+          "500": { "description": "Server error" }
+        }
+      },
+      "post": {
+        "summary": "Register a new user",
+        "description": "Create a new user. Password is automatically hashed.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "400": { "description": "Validation error" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "summary": "Login user",
+        "description": "Authenticate user and return JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } } },
+          "400": { "description": "Invalid credentials" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "User found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "404": { "description": "User not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update user by ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserInput" } } } },
+        "responses": {
+          "200": { "description": "User updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "400": { "description": "Validation error" },
+          "404": { "description": "User not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete user by ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "User deleted" },
+          "404": { "description": "User not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+
+    "/api/workouts": {
+      "get": {
+        "summary": "Get all workouts",
+        "description": "Retrieve all workouts (populated with user info)",
+        "responses": {
+          "200": { "description": "List of workouts", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Workout" } } } } },
+          "500": { "description": "Server error" }
+        }
+      },
+      "post": {
+        "summary": "Create a new workout",
+        "security": [{ "bearerAuth": [] }],
+        "description": "Add a new workout (userId from token recommended)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutInput" } } }
+        },
+        "responses": {
+          "201": { "description": "Workout created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } } },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/workouts/{workoutId}": {
+      "get": {
+        "summary": "Get workout by ID",
+        "parameters": [{ "in": "path", "name": "workoutId", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Workout found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } } },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update workout",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "workoutId", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutInput" } } } },
+        "responses": {
+          "200": { "description": "Workout updated" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete workout",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "workoutId", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Workout deleted" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/workouts/user/{userId}": {
+      "get": {
+        "summary": "Get workouts by user",
+        "parameters": [{ "in": "path", "name": "userId", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "List of user's workouts" }, "500": { "description": "Server error" } }
+      }
+    },
+    "/api/workouts/date/{date}": {
+      "get": {
+        "summary": "Get workouts by date",
+        "parameters": [{ "in": "path", "name": "date", "required": true, "schema": { "type": "string", "format": "date" }, "example": "2026-04-03" }],
+        "responses": { "200": { "description": "Workouts on that date" }, "500": { "description": "Server error" } }
+      }
+    },
+
+    "/api/meals": {
+      "get": {
+        "summary": "Get all meals",
+        "responses": { "200": { "description": "List of meals" }, "500": { "description": "Server error" } }
+      },
+      "post": {
+        "summary": "Create a new meal",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MealInput" } } } },
+        "responses": {
+          "201": { "description": "Meal created" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/meals/{mealId}": {
+      "get": { "summary": "Get meal by ID", "parameters": [{ "in": "path", "name": "mealId", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Meal found" }, "404": { "description": "Not found" } } },
+      "put": {
+        "summary": "Update meal",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "mealId", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MealInput" } } } },
+        "responses": { "200": { "description": "Meal updated" }, "401": { "description": "Unauthorized" } }
+      },
+      "delete": {
+        "summary": "Delete meal",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "mealId", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Meal deleted" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/api/meals/user/{userId}": {
+      "get": { "summary": "Get meals by user", "parameters": [{ "in": "path", "name": "userId", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "User's meals" } } }
+    },
+    "/api/meals/date/{date}": {
+      "get": { "summary": "Get meals by date", "parameters": [{ "in": "path", "name": "date", "required": true, "schema": { "type": "string", "format": "date" } }], "responses": { "200": { "description": "Meals on that date" } } }
+    },
+
+    "/api/goals": {
+      "get": { "summary": "Get all goals", "responses": { "200": { "description": "List of goals" } } },
+      "post": {
+        "summary": "Create a new goal",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GoalInput" } } } },
+        "responses": { "201": { "description": "Goal created" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/api/goals/{goalId}": {
+      "get": { "summary": "Get goal by ID", "parameters": [{ "in": "path", "name": "goalId", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Goal found" } } },
+      "put": {
+        "summary": "Update goal (including progress)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "goalId", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GoalInput" } } } },
+        "responses": { "200": { "description": "Goal updated" }, "401": { "description": "Unauthorized" } }
+      },
+      "delete": {
+        "summary": "Delete goal",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "goalId", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Goal deleted" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/api/goals/user/{userId}": {
+      "get": { "summary": "Get goals by user", "parameters": [{ "in": "path", "name": "userId", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "User's goals" } } }
     }
   }
 }
