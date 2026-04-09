@@ -1,7 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const auth = require('../middleware/auth');   // ← Must be imported
+const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
+const { body } = require('express-validator');
+
+// ====================== USER VALIDATION ======================
+const userValidation = [
+  body('name')
+    .notEmpty().withMessage('Name is required')
+    .trim()
+    .isLength({ min: 2, max: 100 }).withMessage('Name must be between 2 and 100 characters'),
+
+  body('email')
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email')
+    .normalizeEmail(),
+
+  body('password')
+    .optional({ values: 'falsy' }) // Allow password to be optional on UPDATE
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+];
+
+
+// ====================== ROUTES ======================
 
 /**
  * @swagger
@@ -77,7 +101,7 @@ router.get('/:id', userController.getUserById);
  *       500:
  *         description: Server error
  */
-router.post('/', userController.createUser);
+router.post('/', validate(userValidation), userController.createUser);
 
 /**
  * @swagger
@@ -139,7 +163,7 @@ router.post('/login', userController.loginUser);
  *       500:
  *         description: Server error
  */
-router.put('/:id', auth, userController.updateUser);
+router.put('/:id', auth, validate(userValidation), userController.updateUser);
 
 /**
  * @swagger
