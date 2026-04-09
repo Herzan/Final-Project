@@ -182,7 +182,7 @@ router.get('/user/:userId', workoutController.getWorkoutsByUser);
  * /api/workouts/date/{date}:
  *   get:
  *     summary: Get workouts by date
- *     description: Retrieve workouts for a specific date (format: YYYY-MM-DD)
+ *     description: Retrieve workouts for a specific date (format YYYY-MM-DD)
  *     parameters:
  *       - in: path
  *         name: date
@@ -190,10 +190,18 @@ router.get('/user/:userId', workoutController.getWorkoutsByUser);
  *         schema:
  *           type: string
  *           format: date
- *         example: "2026-04-03"
+ *         example: "2026-04-08"
  *     responses:
  *       200:
  *         description: List of workouts on that date
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Workout'
+ *       400:
+ *         description: Invalid date format
  *       500:
  *         description: Server error
  */
