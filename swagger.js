@@ -7,7 +7,7 @@ const options = {
     info: {
       title: 'FitTrack API',
       version: '1.0.0',
-      description: 'Fitness tracking API for managing users, workouts, meals, and goals',
+      description: 'Fitness tracking API for managing users, workouts, meals, and goals with JWT authentication',
     },
     servers: [
       { 
@@ -25,7 +25,7 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Enter JWT token (without "Bearer " prefix)'
+          description: 'Enter JWT token from /api/users/login (without "Bearer " prefix)'
         }
       },
       schemas: {
@@ -46,6 +46,29 @@ const options = {
             name: { type: 'string', example: 'John Doe' },
             email: { type: 'string', example: 'john.doe@example.com' },
             createdAt: { type: 'string', format: 'date-time' }
+          }
+        },
+
+        // ====================== AUTH ======================
+        LoginInput: {
+          type: 'object',
+          required: ['email', 'password'],
+          properties: {
+            email: { type: 'string', format: 'email', example: 'john.doe@example.com' },
+            password: { type: 'string', example: 'StrongPass123!' }
+          }
+        },
+        AuthResponse: {
+          type: 'object',
+          properties: {
+            message: { type: 'string', example: 'Login successful' },
+            token: { 
+              type: 'string', 
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' 
+            },
+            user: { 
+              $ref: '#/components/schemas/User' 
+            }
           }
         },
 
@@ -153,7 +176,7 @@ const options = {
       }
     }
   },
-  apis: ['./routes/*.js']   // This reads JSDoc comments from your route files
+  apis: ['./routes/*.js']   // Reads JSDoc comments from your route files
 };
 
 const specs = swaggerJsdoc(options);
