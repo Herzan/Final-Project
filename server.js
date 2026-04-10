@@ -10,6 +10,9 @@ const mealRoutes = require('./routes/mealRoutes');
 const goalRoutes = require('./routes/goalRoutes');
 const swaggerSetup = require('./swagger');
 
+// NEW: GitHub OAuth
+const githubOAuth = require('./middleware/githubAuth');
+
 const app = express();
 
 // Security & middleware
@@ -19,13 +22,17 @@ app.use(express.json());
 
 connectDB();
 
-// Routes
+// ====================== GITHUB OAUTH ROUTES (PUBLIC) ======================
+app.get('/github/login', githubOAuth.login);
+app.get('/github/callback', githubOAuth.callback);
+
+// ====================== API ROUTES ======================
 app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/meals', mealRoutes);
 app.use('/api/goals', goalRoutes);
 
-// Swagger
+// Swagger Documentation
 swaggerSetup(app);
 
 // Global error handler
